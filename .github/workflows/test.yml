@@ -3,7 +3,7 @@ name: Python package
 on: [push]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
     strategy:
@@ -23,7 +23,7 @@ jobs:
           pipenv install -d
       - name: Test with pytest
         run: |
-          pipenv run pytest test-results-${{ matrix.python-version }}.xml --cov --cov-report=xml --cov-report=html
+          pipenv run pytest -c pyproject.toml test-results-${{ matrix.python-version }}.xml --cov --cov-report=xml --cov-report=html
       - name: Upload pytest test results
         uses: actions/upload-artifact@v3
         with:
