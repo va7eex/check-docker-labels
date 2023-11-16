@@ -2,7 +2,8 @@ from optparse import OptionParser
 
 from .labelcheck import CheckLabelConfig, find_files
 
-if __name__ == "__main__":
+
+def app():
     defaultConfig = CheckLabelConfig(glob_patterns=["*compose.*y*ml", "**/*compose.*y*ml"])
     optparse = OptionParser()
     optparse.add_option(
@@ -37,3 +38,7 @@ if __name__ == "__main__":
     config = CheckLabelConfig(glob_patterns=_opts.files, valid_pattern=_opts.regex, verbose=_opts.verbose)
 
     find_files(config=config)
+
+
+if __name__ == "__main__":
+    app()

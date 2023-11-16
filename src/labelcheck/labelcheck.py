@@ -10,7 +10,7 @@ import yaml
 class CheckLabelConfig:
     glob_patterns: list[str] = field(default_factory=list)
     valid_pattern: str = r"^[\"\']?[^\.][a-z]+(?:\.[a-z]+)*=.+[\"\']?$"
-    verbose: bool = False
+    verbose: bool = True
 
 
 def check_labels(yamlfile: dict[str, Any], valid_pattern: str, verbose_output: bool):

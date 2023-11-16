@@ -24,11 +24,13 @@ classifiers = [
 dependencies = [
   "pyyaml"
 ]
+[project.scripts]
+check-docker-labels = "labelcheck.__main__:app"
 
 [project.urls]
-Documentation = "https://github.com/unknown/init#readme"
-Issues = "https://github.com/unknown/init/issues"
-Source = "https://github.com/unknown/init"
+Documentation = "https://github.com/va7eex/docker-label-linter#readme"
+Issues = "https://github.com/va7eex/docker-label-linter/issues"
+Source = "https://github.com/va7eex/docker-label-linter"
 
 [tool.hatch.version]
 path = "src/labelcheck/__about__.py"
