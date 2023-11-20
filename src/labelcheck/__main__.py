@@ -1,6 +1,6 @@
 from optparse import OptionParser
 
-from .labelcheck import CheckLabelConfig, find_files
+from .labelcheck import CheckLabelConfig, ValidPattern, find_files
 
 
 def app():
@@ -11,8 +11,24 @@ def app():
         "--regex",
         action="store",
         dest="regex",
-        default=defaultConfig.valid_pattern,
-        help=f"Regex pattern to check labels against, default: {defaultConfig.valid_pattern}",
+        default=defaultConfig.valid_pattern.pattern,
+        help=f"Regex pattern to check labels against, default: {defaultConfig.valid_pattern.pattern}",
+    )
+    optparse.add_option(
+        "-u",
+        "--uppercase",
+        action="store_true",
+        dest="uppercase",
+        default=defaultConfig.valid_pattern.key_is_uppercase,
+        help=f"Check if keys should be uppercase, default {defaultConfig.valid_pattern.key_is_uppercase}",
+    )
+    optparse.add_option(
+        "-i",
+        "--ignore-prefix",
+        action="append",
+        dest="ignore_prefix",
+        default=defaultConfig.valid_pattern.ignore_prefix,
+        help=f"Ignore keys that start with the following, multiple prefixes can be specifid by repeating '-i' (ex: {' '.join([f'-i {_pat}' for _pat in defaultConfig.valid_pattern.ignore_prefix])}), default: {defaultConfig.valid_pattern.ignore_prefix}",
     )
     optparse.add_option(
         "-f",
@@ -35,7 +51,10 @@ def app():
     )
     _opts, _ = optparse.parse_args()
 
-    config = CheckLabelConfig(glob_patterns=_opts.files, valid_pattern=_opts.regex, verbose=_opts.verbose)
+    valid_pattern = ValidPattern(
+        pattern=_opts.regex, key_is_uppercase=_opts.uppercase, ignore_prefix=_opts.ignore_prefix
+    )
+    config = CheckLabelConfig(glob_patterns=_opts.files, valid_pattern=valid_pattern, verbose=_opts.verbose)
 
     find_files(config=config)
 
