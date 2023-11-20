@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass, field
 from glob import glob
-from typing import Any, Dict, Iterator, List
+from typing import Any, Dict, Iterator, List, Set
 
 import yaml
 
@@ -16,7 +16,7 @@ class ValidPattern:
 @dataclass
 class CheckLabelConfig:
     glob_patterns: List[str] = field(default_factory=list)
-    valid_pattern: ValidPattern = ValidPattern()
+    valid_pattern: ValidPattern = field(default_factory=ValidPattern)
     verbose: bool = True
 
 
@@ -63,11 +63,11 @@ def check_labels(yamlfile: Dict[str, Any], valid_pattern: ValidPattern, verbose_
 def find_files(
     config: CheckLabelConfig = CheckLabelConfig(glob_patterns=["*compose.y?ml", "**/*compose.*y?ml"]),
 ):
-    fileset: set[str] = set()
+    fileset: Set[str] = set()
     for _glob in [glob(globpat) for globpat in config.glob_patterns]:
         for _file in _glob:
             fileset.add(_file)
-    files: list[str] = list(fileset)
+    files: List[str] = list(fileset)
     files.sort()
     if len(files) == 0:
         raise FileNotFoundError("No files matching pattern found!")
