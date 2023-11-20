@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "docker-label-check"
+name = "check-docker-labels"
 version = "0.1.0"
 description = ""
 authors = ["David Rickett <david@va7eex.ca>"]

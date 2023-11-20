@@ -3,3 +3,7 @@ services:
   myservice_yml:
     labels:
       - com.host.description.=label
+  myservice2_yml:
+    labels:
+      - com.host.description=valid_label
+      - com.host..foo=invalid_label

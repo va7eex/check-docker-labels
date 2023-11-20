@@ -3,3 +3,7 @@ services:
   myservice_yaml:
     labels:
       - com.host.description.=label
+  myservice2_yaml:
+    labels:
+      COM.MY.SERVICE: INVALID BECAUSE ALL UPCASE
+      COM.SERVICE..DESCRIPTION: invalid
