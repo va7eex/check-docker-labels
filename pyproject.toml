@@ -32,7 +32,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.hatch.version]
-path = "src/labelcheck/__about__.py"
+path = "src/checkdockerlabels/__about__.py"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
@@ -48,19 +48,19 @@ line-length = 120
 profile = "black"
 
 [tool.coverage.run]
-source_pkgs = ["labelcheck", "tests"]
+source_pkgs = ["checkdockerlabels", "tests"]
 branch = true
 parallel = true
 omit = [
-    "src/labelcheck/__about__.py",
-    "src/labelcheck/__init__.py",
-    "src/labelcheck/__main__.py",
+    "src/checkdockerlabels/__about__.py",
+    "src/checkdockerlabels/__init__.py",
+    "src/checkdockerlabels/__main__.py",
     "**/__init__.py",
 ]
 
 [tool.coverage.paths]
-init = ["src/labelcheck", "*/labelcheck/src/labelcheck"]
-tests = ["tests", "*/labelcheck/tests"]
+init = ["src/checkdockerlabels", "*/checkdockerlabels/src/checkdockerlabels"]
+tests = ["tests", "*/checkdockerlabels/tests"]
 
 [tool.coverage.report]
 exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
