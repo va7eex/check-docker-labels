@@ -1,49 +1,44 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[project]
-name = "labelcheck"
-dynamic = ["version"]
-description = ''
-readme = "README.md"
-requires-python = ">=3.9"
+[tool.poetry]
+name = "docker-label-check"
+version = "0.1.0"
+description = ""
+authors = ["David Rickett <david@va7eex.ca>"]
 license = "MIT"
-keywords = []
-authors = [
-  { name = "David Rickett", email = "david@va7eex.ca" },
-]
-classifiers = [
-  "Development Status :: 4 - Beta",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: Implementation :: CPython",
-]
-dependencies = [
-  "pyyaml"
-]
-[project.scripts]
-check-docker-labels = "labelcheck.__main__:app"
+readme = "README.md"
+homepage = "https://github.com/va7eex/docker-label-linter"
+repository = "https://github.com/va7eex/docker-label-linter"
+documentation = "https://github.com/va7eex/docker-label-linter#readme"
+packages = [{ include = "checkdockerlabels", from = "src" }]
 
-[project.urls]
-Documentation = "https://github.com/va7eex/docker-label-linter#readme"
-Issues = "https://github.com/va7eex/docker-label-linter/issues"
-Source = "https://github.com/va7eex/docker-label-linter"
+[tool.poetry.scripts]
+check-docker-labels = "checkdockerlabels.__main__:app"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+PyYAML = "*"
+
+[tool.poetry.group.dev.dependencies]
+types-PyYAML = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-html = "*"
+mypy = "*"
+mypy-extensions = "*"
+isort = "*"
+black = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.hatch.version]
 path = "src/labelcheck/__about__.py"
-
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 minversion = "7.0"
 addopts = "-ra -q --cov --cov-report=term --cov-report=xml"
-testpaths = [
-    "tests",
-    "integration",
-]
+testpaths = ["tests", "integration"]
 
 [tool.black]
 target-version = ["py37"]
@@ -57,10 +52,10 @@ source_pkgs = ["labelcheck", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/labelcheck/__about__.py",
-  "src/labelcheck/__init__.py",
-  "src/labelcheck/__main__.py",
-  "**/__init__.py"
+    "src/labelcheck/__about__.py",
+    "src/labelcheck/__init__.py",
+    "src/labelcheck/__main__.py",
+    "**/__init__.py",
 ]
 
 [tool.coverage.paths]
@@ -68,8 +63,4 @@ init = ["src/labelcheck", "*/labelcheck/src/labelcheck"]
 tests = ["tests", "*/labelcheck/tests"]
 
 [tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
