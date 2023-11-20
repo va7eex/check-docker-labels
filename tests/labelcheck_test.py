@@ -4,7 +4,7 @@ from typing import Any, Dict, Tuple
 import pytest
 import yaml
 
-from labelcheck.labelcheck import CheckLabelConfig, check_labels, find_files
+from checkdockerlabels.labelcheck import CheckLabelConfig, check_labels, find_files
 
 
 @pytest.fixture(params=[True, False], ids=["key-value", "string"])
@@ -23,7 +23,7 @@ def file_name(request: pytest.FixtureRequest) -> str:
 
 
 @pytest.fixture(params=["foo", "foo.bar", "foo.bar.baz"])
-def valid_compose_Dict(request: pytest.FixtureRequest, string_pattern: str, labeltype: bool) -> Dict[str, Any]:
+def valid_compose_dict(request: pytest.FixtureRequest, string_pattern: str, labeltype: bool) -> Dict[str, Any]:
     if labeltype:
         return {
             "services": {
@@ -46,7 +46,7 @@ def valid_compose_Dict(request: pytest.FixtureRequest, string_pattern: str, labe
 
 
 @pytest.fixture(params=[".foo", "foo..bar", "foo.BAR", "foo.bar."])
-def invalid_compose_Dict(request: pytest.FixtureRequest, string_pattern: str, labeltype: bool) -> Dict[str, Any]:
+def invalid_compose_dict(request: pytest.FixtureRequest, string_pattern: str, labeltype: bool) -> Dict[str, Any]:
     if labeltype:
         return {
             "services": {
@@ -77,7 +77,7 @@ def invalid_compose_Dict(request: pytest.FixtureRequest, string_pattern: str, la
         [True, ["foo", "foo.bar", "foo.bar.baz", "foo.bar."]],
     ]
 )
-def complex_compose_Dict(
+def complex_compose_dict(
     request: pytest.FixtureRequest, string_pattern: str, labeltype: bool
 ) -> Tuple[bool, Dict[str, Any]]:
     if labeltype:
@@ -89,45 +89,41 @@ def complex_compose_Dict(
 
 
 @pytest.fixture
-def valid_compose_file(file_name: str, tmp_path: Path, valid_compose_Dict: Dict[str, Any]) -> Path:
+def valid_compose_file(file_name: str, tmp_path: Path, valid_compose_dict: Dict[str, Any]) -> Path:
     compose_file = tmp_path / file_name
     with open(compose_file, mode="w", encoding="utf-8") as f:
-        yaml.safe_dump(valid_compose_Dict, f)
+        yaml.safe_dump(valid_compose_dict, f)
     return compose_file
 
 
 @pytest.fixture
-def invalid_compose_file(file_name: str, tmp_path: Path, invalid_compose_Dict: Dict[str, Any]) -> Path:
+def invalid_compose_file(file_name: str, tmp_path: Path, invalid_compose_dict: Dict[str, Any]) -> Path:
     compose_file = tmp_path / file_name
     with open(compose_file, mode="w", encoding="utf-8") as f:
-        yaml.safe_dump(invalid_compose_Dict, f)
+        yaml.safe_dump(invalid_compose_dict, f)
     return compose_file
 
 
 @pytest.fixture
 def complex_compose_file(
-    file_name: str, tmp_path: Path, complex_compose_Dict: Tuple[bool, Dict[str, Any]]
+    file_name: str, tmp_path: Path, complex_compose_dict: Tuple[bool, Dict[str, Any]]
 ) -> Tuple[bool, Path]:
     compose_file = tmp_path / file_name
     with open(compose_file, mode="w", encoding="utf-8") as f:
-        yaml.safe_dump(complex_compose_Dict[1], f)
-    return complex_compose_Dict[0], compose_file
+        yaml.safe_dump(complex_compose_dict[1], f)
+    return complex_compose_dict[0], compose_file
 
 
-def test_check_valid_labels(valid_compose_Dict: Dict[str, Any]):
+def test_check_valid_labels(valid_compose_dict: Dict[str, Any]):
     config = CheckLabelConfig()
-    with pytest.raises(SystemExit) as pytest_wrapped_e:
-        check_labels(valid_compose_Dict, valid_pattern=config.valid_pattern, verbose_output=True)
-    assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.code == 0
+    result = check_labels("", valid_compose_dict, valid_pattern=config.valid_pattern, verbose_output=True)
+    assert result == True
 
 
-def test_check_invalid_labels(invalid_compose_Dict: Dict[str, Any]):
+def test_check_invalid_labels(invalid_compose_dict: Dict[str, Any]):
     config = CheckLabelConfig()
-    with pytest.raises(SystemExit) as pytest_wrapped_e:
-        check_labels(invalid_compose_Dict, valid_pattern=config.valid_pattern, verbose_output=True)
-    assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.code == 1
+    result = check_labels("", invalid_compose_dict, valid_pattern=config.valid_pattern, verbose_output=True)
+    assert result == False
 
 
 def test_check_valid_file(valid_compose_file: Path):
@@ -152,12 +148,10 @@ def test_raise_if_no_files_found(tmp_path: pytest.FixtureRequest):
         find_files(config)
 
 
-def test_check_complex_labels(complex_compose_Dict: Tuple[bool, Dict[str, Any]]):
+def test_check_complex_labels(complex_compose_dict: Tuple[bool, Dict[str, Any]]):
     config = CheckLabelConfig()
-    with pytest.raises(SystemExit) as pytest_wrapped_e:
-        check_labels(complex_compose_Dict[1], valid_pattern=config.valid_pattern, verbose_output=True)
-    assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.code == int(complex_compose_Dict[0])
+    result = check_labels("", complex_compose_dict[1], valid_pattern=config.valid_pattern, verbose_output=True)
+    assert result != complex_compose_dict[0]
 
 
 def test_check_complex_file(complex_compose_file: Tuple[bool, Path]):

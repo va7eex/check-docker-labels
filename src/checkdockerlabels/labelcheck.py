@@ -37,7 +37,7 @@ class ServiceReport:
         ]
 
 
-def check_labels(yamlfile: Dict[str, Any], valid_pattern: ValidPattern, verbose_output: bool):
+def check_labels(file_name: str, yamlfile: Dict[str, Any], valid_pattern: ValidPattern, verbose_output: bool) -> bool:
     services: List[ServiceReport] = []
     for service, keys in yamlfile.get("services", {}).items():
         srv = ServiceReport(service, keys.get("labels", []))
@@ -51,18 +51,19 @@ def check_labels(yamlfile: Dict[str, Any], valid_pattern: ValidPattern, verbose_
 
     if len(srv_with_invalid_labels) > 0:
         if verbose_output:
-            print("The following invalid service labels were discovered:")
-            for key, items in srv_with_invalid_labels:
-                print(f"\t{key}:")
+            print(f"The following invalid service labels were discovered in {file_name}:")
+            for i, (key, items) in enumerate(srv_with_invalid_labels):
+                print(f"{' ' * 2} {i:03}: {key}:")
                 for item in items:
-                    print(f"\t\t{item}")
-        exit(1)
-    exit(0)
+                    print(f"{' ' * 4} - {item}")
+        return False
+    return True
 
 
 def find_files(
     config: CheckLabelConfig = CheckLabelConfig(glob_patterns=["*compose.y?ml", "**/*compose.*y?ml"]),
 ):
+    error_present: bool = False
     fileset: Set[str] = set()
     for _glob in [glob(globpat) for globpat in config.glob_patterns]:
         for _file in _glob:
@@ -76,11 +77,19 @@ def find_files(
         print("Discovered files:")
         for file in files:
             print("-", file)
+
     for file in files:
         with open(file, mode="r", encoding="utf-8") as f:
             compose = yaml.safe_load(f)
-            check_labels(
+            result = check_labels(
+                file_name=file,
                 yamlfile=compose,
                 valid_pattern=config.valid_pattern,
                 verbose_output=config.verbose,
             )
+            if not result:
+                error_present = True
+
+    if error_present:
+        exit(1)
+    exit(0)
